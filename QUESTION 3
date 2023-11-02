@@ -1,0 +1,60 @@
+#### INTERSECTION OF TWO LINKEDLIST #####
+#### QUESTION FROM LEETCODE ###
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+public class Solution {
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        ListNode TempA=headA;
+        ListNode TempB=headB;
+        int ListNodeALength=0;
+        while(TempA!=null)
+        {
+            ListNodeALength++;
+            TempA=TempA.next;
+        }
+         int ListNodeBLength=0;
+        while(TempB!=null)
+        {
+            ListNodeBLength++;
+            TempB=TempB.next;
+        }
+        TempA=headA;
+        TempB=headB;
+        if(ListNodeALength>ListNodeBLength)
+        {
+            int Steps=ListNodeALength - ListNodeBLength;
+            for(int i=1;i<=Steps;i++)
+            {
+                TempA=TempA.next;
+
+            }
+        }
+        else
+        {
+             int Steps=ListNodeBLength - ListNodeALength;
+             for(int i=1;i<=Steps;i++)
+            {
+                TempB=TempB.next;
+
+            }
+
+        }
+        while(TempA!=TempB)
+        {
+            TempA=TempA.next;
+            TempB=TempB.next;
+        }
+        return TempA;
+        
+    }
+}
