@@ -1,0 +1,67 @@
+Imports System.Data
+Imports System.Threading
+Imports System.Configuration
+Imports MySql.Data.MySqlClient
+
+Partial Class _Default
+    Inherits System.Web.UI.Page
+    Dim str As String
+    Public i As Integer
+
+    Public connStr As String = ConfigurationManager.ConnectionStrings("Local").ConnectionString
+    Public con As New MySqlConnection(connStr)
+
+
+    Protected Sub DRP_centre_Load(sender As Object, e As EventArgs) Handles DRP_centre.Load
+        If Not Me.IsPostBack Then
+            Using con As New MySqlConnection(connStr)
+                Dim query As String = "SELECT centre_code,centre_Name FROM hbsr.hbsr_centredetails"
+                Using command As New MySqlCommand(query, con)
+                    con.Open()
+                    Using reader As MySqlDataReader = command.ExecuteReader()
+                        While reader.Read()
+                            DRP_centre.Items.Add(New ListItem(reader("centre_code").ToString() & " - " & reader("centre_Name").ToString(), reader("centre_code").ToString()))
+                        End While
+                    End Using
+                End Using
+            End Using
+        End If
+    End Sub
+
+    Protected Sub drpYear_Load(sender As Object, e As EventArgs) Handles drpYear.Load
+            Using con As New MySqlConnection(connStr)
+                Dim query As String = "select distinct left(diagOfStroke, 4) as year from hbsr_coreform where left(diagOfStroke, 4) != '' and left(diagOfStroke, 4) not in ('9999', '0202', '1801') order by left(diagOfStroke, 4) asc"
+                Using command As New MySqlCommand(query, con)
+                    con.Open()
+                    Using reader As MySqlDataReader = command.ExecuteReader()
+                        While reader.Read()
+                            drpYear.Items.Add(New ListItem(reader("year").ToString()))
+                        End While
+                    End Using
+                End Using
+            End Using
+
+    End Sub
+
+    Protected Sub Submit_Click(sender As Object, e As EventArgs) Handles Submit.Click
+        Dim centre_code As String = DRP_centre.SelectedValue
+        Dim Year As String = drpYear.SelectedValue
+
+        Using con As New MySqlConnection(connStr)
+            Dim query As String = "SELECT MID(diagOfStroke, 5, 2) AS month, COUNT(*) AS count FROM hbsr_coreform WHERE cenCode = @centre_code AND LEFT(diagOfStroke, 4) = @Year GROUP BY MID(diagOfStroke, 5, 2)"
+            Using command As New MySqlCommand(query, con)
+                command.Parameters.AddWithValue("@centre_code", centre_code)
+                command.Parameters.AddWithValue("@Year", Year)
+
+                Using sda As New MySqlDataAdapter(command)
+                    Using dt As New DataTable()
+                        con.Open()
+                        sda.Fill(dt)
+                        grdp_View.DataSource = dt
+                        grdp_View.DataBind()
+                    End Using
+                End Using
+            End Using
+        End Using
+    End Sub
+End Class
