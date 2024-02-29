@@ -1,0 +1,272 @@
+Imports System.Data
+Imports System.Threading
+Imports System.Configuration
+Imports MySql.Data.MySqlClient
+Imports System.Web.Services
+
+Partial Class Default1
+    Inherits System.Web.UI.Page
+
+    Public connStr As String = ConfigurationManager.ConnectionStrings("Local").ConnectionString
+    Public con As New MySqlConnection(connStr)
+
+    Protected Sub DropDownList1_Load(sender As Object, e As EventArgs) Handles DropDownList1.Load
+        If Not Me.IsPostBack Then
+            Using con As New MySqlConnection(connStr)
+                Dim query As String = "SELECT centre_code,centre_Name FROM hbsr.hbsr_centredetails"
+                Using command As New MySqlCommand(query, con)
+                    con.Open()
+                    Using reader As MySqlDataReader = command.ExecuteReader()
+                        While reader.Read()
+                            DropDownList1.Items.Add(New ListItem(reader("centre_code").ToString() & " - " & reader("centre_Name").ToString(), reader("centre_code").ToString()))
+                        End While
+                    End Using
+                End Using
+            End Using
+        End If
+    End Sub
+
+    Protected Sub DropDownList2_Load(sender As Object, e As EventArgs) Handles DropDownList2.Load
+        If Not Me.IsPostBack Then
+            Using con As New MySqlConnection(connStr)
+                Dim query As String = "select distinct left(diagOfStroke, 4) as year from hbsr_coreform where left(diagOfStroke, 4) != '' and left(diagOfStroke, 4) not in ('9999', '0202', '1801') order by left(diagOfStroke, 4) asc"
+                Using command As New MySqlCommand(query, con)
+                    con.Open()
+                    Using reader As MySqlDataReader = command.ExecuteReader()
+                        While reader.Read()
+                            DropDownList2.Items.Add(New ListItem(reader("year").ToString()))
+                        End While
+                    End Using
+                End Using
+            End Using
+        End If
+    End Sub
+
+
+    Protected Sub DropDownList3_Load(sender As Object, e As EventArgs) Handles DropDownList3.Load
+        If Not Me.IsPostBack Then
+            Using con As New MySqlConnection(connStr)
+                Dim query As String = "select distinct left(diagOfStroke, 4) as year from hbsr_coreform where left(diagOfStroke, 4) != '' and left(diagOfStroke, 4) not in ('9999', '0202', '1801') order by left(diagOfStroke, 4) asc"
+                Using command As New MySqlCommand(query, con)
+                    con.Open()
+                    Using reader As MySqlDataReader = command.ExecuteReader()
+                        While reader.Read()
+                            DropDownList3.Items.Add(New ListItem(reader("year").ToString()))
+                        End While
+                    End Using
+                End Using
+            End Using
+        End If
+    End Sub
+
+    
+
+
+    Protected Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+       
+
+        'Using con As New MySqlConnection(connStr)
+        '    Dim query As String = "SELECT MID(diagOfStroke, 5, 2) AS month, COUNT(*) AS count FROM hbsr_coreform WHERE cenCode = @centre_code AND LEFT(diagOfStroke, 4) = @Year GROUP BY MID(diagOfStroke, 5, 2)"
+        '    Using command As New MySqlCommand(query, con)
+        '        command.Parameters.AddWithValue("@centre_code", centre_code)
+        '        command.Parameters.AddWithValue("@Year", Year)
+        '        Using sda As New MySqlDataAdapter(command)
+        '            Using dt As New DataTable()
+        '                con.Open()
+        '                sda.Fill(dt)
+
+        '                If dt.Rows.Count > 0 Then
+        '                    datatable.Rows.Clear()
+
+        '                    Dim headerRow As New TableRow()
+        '                    For Each col As DataColumn In dt.Columns
+        '                        Dim headerCell As New TableCell()
+        '                        headerCell.Text = col.ColumnName
+        '                        headerRow.Cells.Add(headerCell)
+        '                    Next
+        '                    datatable.Rows.Add(headerRow)
+        '                    For Each row As DataRow In dt.Rows
+        '                        Dim dataRow As New TableRow()
+        '                        For Each col As DataColumn In dt.Columns
+        '                            Dim dataCell As New TableCell()
+        '                            dataCell.Text = row(col).ToString()
+        '                            dataRow.Cells.Add(dataCell)
+        '                        Next
+        '                        datatable.Rows.Add(dataRow)
+        '                    Next
+        '                Else
+        '                    MsgBox("No Data Available")
+        '                End If
+
+
+
+        '            End Using
+        '        End Using
+        '    End Using
+        'End Using
+        If RadioButton1.Checked Then
+            If RadioButton3.Checked Then
+                Dim centre_code As String = DropDownList1.SelectedValue
+                Dim Year As String = DropDownList2.SelectedValue
+
+                Using con As New MySqlConnection(connStr)
+                    Dim query As String = "SELECT MID(diagOfStroke, 5, 2) AS month, COUNT(*) AS 'Active Case' FROM hbsr_coreform WHERE cenCode = @centre_code AND LEFT(diagOfStroke, 4) = @Year GROUP BY MID(diagOfStroke, 5, 2)"
+                    Using command As New MySqlCommand(query, con)
+                        command.Parameters.AddWithValue("@centre_code", centre_code)
+                        command.Parameters.AddWithValue("@Year", Year)
+                        Using sda As New MySqlDataAdapter(command)
+                            Using dt As New DataTable()
+                                con.Open()
+                                sda.Fill(dt)
+
+                                If dt.Rows.Count > 0 Then
+                                    datatable.Rows.Clear()
+
+                                    Dim headerRow As New TableRow()
+                                    For Each col As DataColumn In dt.Columns
+                                        Dim headerCell As New TableCell()
+                                        headerCell.Text = col.ColumnName
+                                        headerRow.Cells.Add(headerCell)
+                                    Next
+                                    datatable.Rows.Add(headerRow)
+                                    For Each row As DataRow In dt.Rows
+                                        Dim dataRow As New TableRow()
+                                        For Each col As DataColumn In dt.Columns
+                                            Dim dataCell As New TableCell()
+                                            dataCell.Text = row(col).ToString()
+                                            dataRow.Cells.Add(dataCell)
+                                        Next
+                                        datatable.Rows.Add(dataRow)
+                                    Next
+                                Else
+                                    'MsgBox("No Data Available")
+                                    Session("Message") = "error"
+                                End If
+                            End Using
+                        End Using
+                    End Using
+                End Using
+
+            ElseIf RadioButton4.Checked Then
+                If RadioButton5.Checked Then
+
+                    Dim centre_code As String = DropDownList1.SelectedValue
+
+                    Using con As New MySqlConnection(connStr)
+                        Dim query As String = "select left(diagOfStroke,4),count(*) as 'Active Cases' from hbsr_coreform where cencode=@centre_code group by left(diagOfStroke,4)"
+                        Using command As New MySqlCommand(query, con)
+                            command.Parameters.AddWithValue("@centre_code", centre_code)
+                            Using sda As New MySqlDataAdapter(command)
+                                Using dt As New DataTable()
+                                    con.Open()
+                                    sda.Fill(dt)
+
+                                    If dt.Rows.Count > 0 Then
+                                        datatable.Rows.Clear()
+
+                                        Dim headerRow As New TableRow()
+                                        For Each col As DataColumn In dt.Columns
+                                            Dim headerCell As New TableCell()
+                                            headerCell.Text = col.ColumnName
+                                            headerRow.Cells.Add(headerCell)
+                                        Next
+                                        datatable.Rows.Add(headerRow)
+                                        For Each row As DataRow In dt.Rows
+                                            Dim dataRow As New TableRow()
+                                            For Each col As DataColumn In dt.Columns
+                                                Dim dataCell As New TableCell()
+                                                dataCell.Text = row(col).ToString()
+                                                dataRow.Cells.Add(dataCell)
+                                            Next
+                                            datatable.Rows.Add(dataRow)
+                                        Next
+                                    Else
+                                        MsgBox("No Data Available")
+                                    End If
+
+                                End Using
+                            End Using
+                        End Using
+                    End Using
+                Else
+                    Dim centre_code As String = DropDownList1.SelectedValue
+                    Using con As New MySqlConnection(connStr)
+                        Dim query As String = "select left(diagOfStroke, 4) as Year, sum(case when repinst = 1 then 1 else 0 end) as 'IPD', sum(case when repinst = 2 then 1 else 0 end) as 'OPD' from hbsr_coreform where cencode =@centre_code group by left(diagOfStroke, 4)"
+                        Using command As New MySqlCommand(query, con)
+                            command.Parameters.AddWithValue("@centre_code", centre_code)
+
+                            Using sda As New MySqlDataAdapter(command)
+                                Using dt As New DataTable()
+                                    con.Open()
+                                    sda.Fill(dt)
+
+                                    If dt.Rows.Count > 0 Then
+                                        datatable.Rows.Clear()
+
+                                        Dim headerRow As New TableRow()
+                                        For Each col As DataColumn In dt.Columns
+                                            Dim headerCell As New TableCell()
+                                            headerCell.Text = col.ColumnName
+                                            headerRow.Cells.Add(headerCell)
+                                        Next
+                                        datatable.Rows.Add(headerRow)
+                                        For Each row As DataRow In dt.Rows
+                                            Dim dataRow As New TableRow()
+                                            For Each col As DataColumn In dt.Columns
+                                                Dim dataCell As New TableCell()
+                                                dataCell.Text = row(col).ToString()
+                                                dataRow.Cells.Add(dataCell)
+                                            Next
+                                            datatable.Rows.Add(dataRow)
+                                        Next
+                                    Else
+                                        MsgBox("No Data Available")
+                                    End If
+                                End Using
+                            End Using
+                        End Using
+                    End Using
+                End If
+            End If
+
+        Else
+
+            Dim cyear As String = DropDownList3.SelectedValue
+            Using con As New MySqlConnection(connStr)
+                Dim query As String = "select cencode,count(*) as 'Active Cases' from hbsr_coreform where left(diagOfStroke,4)=@Year group by cencode"
+                Using command As New MySqlCommand(query, con)
+                    command.Parameters.AddWithValue("@Year", cyear)
+                    Using sda As New MySqlDataAdapter(command)
+                        Using dt As New DataTable()
+                            con.Open()
+                            sda.Fill(dt)
+
+                            If dt.Rows.Count > 0 Then
+                                datatable.Rows.Clear()
+
+                                Dim headerRow As New TableRow()
+                                For Each col As DataColumn In dt.Columns
+                                    Dim headerCell As New TableCell()
+                                    headerCell.Text = col.ColumnName
+                                    headerRow.Cells.Add(headerCell)
+                                Next
+                                datatable.Rows.Add(headerRow)
+                                For Each row As DataRow In dt.Rows
+                                    Dim dataRow As New TableRow()
+                                    For Each col As DataColumn In dt.Columns
+                                        Dim dataCell As New TableCell()
+                                        dataCell.Text = row(col).ToString()
+                                        dataRow.Cells.Add(dataCell)
+                                    Next
+                                    datatable.Rows.Add(dataRow)
+                                Next
+                            Else
+                                MsgBox("No Data Available")
+                            End If
+                        End Using
+                    End Using
+                End Using
+            End Using
+        End If
+    End Sub
+End Class
