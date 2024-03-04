@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hello, World!</title>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/data.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+</head>
+<style>
+  /* Your CSS styles */
+</style>
+<body>
+  <figure class="highcharts-figure">
+    <div id="container"></div>
+    <table id="datatable">
+      <thead>
+        <tr>
+          <th></th>
+          <th>IPD</th>
+          <th>OPD</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>2016</th>
+          <td>30386</td>
+          
+        </tr>
+        <tr>
+          <th>2017</th>
+          <td>29173</td>
+          <td>24453</td>
+        </tr>
+        <tr>
+          <th>2018</th>
+          <td>28430</td>
+          <td>26453</td>
+        </tr>
+        <tr>
+          <th>2019</th>
+          <td>28042</td>
+          <td>23453</td>
+        </tr>
+        <tr>
+          <th>2020</th>
+          <td>27063</td>
+       
+        </tr>
+        <tr>
+          <th>2021</th>
+          <td>28684</td>
+      
+        </tr>
+      </tbody>
+    </table>
+  </figure>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const tableData = [];
+      const table = document.getElementById('datatable');
+      const categories = [];
+      const ipdData = [];
+      const opdData = [];
+
+      // Extracting data from table
+      const rows = table.getElementsByTagName('tr');
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        const cells = row.getElementsByTagName('td');
+        categories.push(row.getElementsByTagName('th')[0].innerText);
+        ipdData.push(cells[0] ? parseInt(cells[0].innerText.replace(/\s/g, '') || '0', 10) : 0);
+        opdData.push(cells[1] ? parseInt(cells[1].innerText.replace(/\s/g, '') || '0', 10) : 0);
+      }
+
+      // Creating the Highcharts chart
+      Highcharts.chart('container', {
+        chart: {
+          type: 'column'
+        },
+        title: {
+          text: 'HBSR STROKE CASES'
+        },
+        subtitle: {
+          text: 'ICMR-NCDIR'
+        },
+        xAxis: {
+          categories: categories,
+          labels: {
+            autoRotation: [-45, -90],
+            style: {
+              fontSize: '13px',
+              fontFamily: 'Verdana, sans-serif'
+            }
+          }
+        },
+        yAxis: {
+          min: 0,
+          title: {
+            text: 'ACTIVE CASES'
+          }
+        },
+        legend: {
+          enabled: false
+        },
+        series: [{
+          name: 'IPD',
+          data: ipdData,
+          color: '#6225ed',
+          dataLabels: {
+            enabled: true,
+            formatter: function() {
+              return Highcharts.numberFormat(this.y, 0, '', ' ');
+            },
+            verticalAlign: 'top',
+            inside: true
+          }
+        }, {
+          name: 'OPD',
+          data: opdData,
+          color: '#056987',
+          dataLabels: {
+            enabled: true,
+            formatter: function() {
+              return Highcharts.numberFormat(this.y, 0, '', ' ');
+            },
+            verticalAlign: 'top',
+            inside: true
+          }
+        }]
+      });
+    });
+  </script>
+</body>
+</html>
