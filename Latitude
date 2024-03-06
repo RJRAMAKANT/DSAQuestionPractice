@@ -1,0 +1,41 @@
+function onsubmit(){
+	var country=document.getElementById('country').value;
+	var state=document.getElemetById('state').value;
+	var city=document.getElementById('city').value;
+	var pincode=document.getElementById('pincode').value;
+	var area=document.getElementById('area').value;
+	var address=area+","+city+","+state+","+pincode+","+country;
+	
+	var url="https://geocoder.ls.hereapi.com/6.2/geocode.json?searchtext="+address+"&gen=9&apikey={key goes here}";
+	var xmlHttp=new XMLHttpRequest();
+	xmlHttp.open("GET",url,false);
+	xmlHttp.send(null);
+	var json=JSON.parse(xmlHttp.responseText);
+	console.log(json);
+	document.getElementById('lat').value=json.Response.View[0].Result[0].Location.DisplayPosition.Latitude;
+	document.getElemtById('lang').value=json.Response.View[0].Reslt[0].Location.DisplayPosition.Longitude;
+}
+
+
+////////////////////////******************/////////////////////////
+
+<script>
+function submited(){
+	var country=document.getElementById('country').value;
+	var state=document.getElemetById('state').value;
+	var city=document.getElementById('city').value;
+	var pincode=document.getElementById('pincode').value;
+	var area=document.getElementById('area').value;
+	var address=area+","+city+","+state+","+pincode+","+country;
+	
+	var url="https://geocoder.ls.hereapi.com/6.2/geocode.json?searchtext="+address+"&gen=9&apikey=api_key";
+	var xmlHttp=new XMLHttpRequest();
+	xmlHttp.open("GET",url,false);
+	xmlHttp.send(null);
+	var json=JSON.parse(xmlHttp.responseText);
+	console.log(json);
+	document.getElementById('lat').value=json.Response.View[0].Result[0].Location.DisplayPosition.Latitude;
+	document.getElemtById('lang').value=json.Response.View[0].Reslt[0].Location.DisplayPosition.Longitude;
+}
+
+</script>
