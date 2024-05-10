@@ -1,0 +1,40 @@
+Imports System.Net
+Imports System.Web.Script.Serialization
+
+Partial Class FirstForm
+    Inherits System.Web.UI.Page
+
+    Protected Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        Dim address As String = TextBox1.Text
+
+        ' Replace "YOUR_API_KEY" with your actual API key
+        Dim apiKey As String = "663de319625ff634151088cxw53bdf6"
+        Dim url As String = "https://geocode.xyz/" & address & "?json=1&auth=" & apiKey
+
+        ' Ensure TLS 1.2 is used for the request
+        ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12
+
+        Dim client As New WebClient()
+
+        Try
+            Dim json As String = client.DownloadString(url)
+
+            ' Parsing JSON using JavaScriptSerializer
+            Dim serializer As New JavaScriptSerializer()
+
+            ' Deserialize the JSON response
+            Dim jsonObject As Object = serializer.Deserialize(Of Object)(json)
+
+            ' Check if JSON contains the expected structure
+            If TypeOf jsonObject Is Dictionary(Of String, Object) Then
+                Dim latitude As String = jsonObject("latt")
+                Dim longitude As String = jsonObject("longt")
+                TextBox2.Text = latitude
+                TextBox3.Text = longitude
+            End If
+        Catch ex As Exception
+            ' Handle any exceptions
+            TextBox2.Text = "Error occurred: " & ex.Message
+        End Try
+    End Sub
+End Class
