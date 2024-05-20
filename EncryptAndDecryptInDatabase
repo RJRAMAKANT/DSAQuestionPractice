@@ -1,0 +1,23 @@
+CREATE FUNCTION EncryptStringWithoutKey(input VARCHAR(255))
+RETURNS VARCHAR(255)
+BEGIN
+    DECLARE encrypted_string VARCHAR(255);
+    SET encrypted_string = HEX(AES_ENCRYPT(input, ''));
+    RETURN encrypted_string;
+END$$
+
+-- Create decryption function without a key (not recommended for real-world use)
+CREATE FUNCTION DecryptStringWithoutKey(input VARCHAR(255))
+RETURNS VARCHAR(255)
+BEGIN
+    DECLARE decrypted_string VARCHAR(255);
+    SET decrypted_string = AES_DECRYPT(UNHEX(input), '');
+    RETURN decrypted_string;
+END$$
+
+DELIMITER ;
+
+
+
+
+///////// My SQl Database Default Encryption and Decryption Method without using any Encryption key or algorithm
