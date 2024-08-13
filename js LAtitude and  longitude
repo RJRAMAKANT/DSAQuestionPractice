@@ -1,0 +1,41 @@
+<html>
+<head>
+    <title>Geocoding Example</title>
+</head>
+<body>
+    <h1>Geocode Address</h1>
+    <p>Enter an address to get its coordinates:</p>
+    <input type="text" id="address" placeholder="Enter address">
+    <button onclick="geocodeAddress()">Get Coordinates</button>
+    <p id="result"></p>
+
+    <script>
+    async function geocodeAddress() {
+        const address = document.getElementById('address').value;
+        const resultElement = document.getElementById('result');
+
+        if (address === '') {
+            resultElement.innerHTML = 'Please enter an address.';
+            return;
+        }
+
+        const apiKey = '66b4ac192927a499315243cufb154d4';
+        const url = `https://geocode.maps.co/search?q=${address}&api_key=${apiKey}`;
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.length > 0) {
+                const location = data[0];
+                resultElement.innerHTML = `Latitude: ${location.lat}<br>Longitude: ${location.lon}<br>Display Name: ${location.display_name}`;
+            } else {
+                resultElement.innerHTML = `No results found for the address: ${address}`;
+            }
+        } catch (error) {
+            resultElement.innerHTML = `Error: ${error.message}`;
+        }
+    }
+    </script>
+</body>
+</html>
