@@ -1,0 +1,27 @@
+<System.Web.Services.WebMethod()>
+Public Shared Sub SetSessionVariable(value As String)
+    HttpContext.Current.Session("MySessionVariable") = value
+End Sub
+
+
+function setSessionVariable(value) {
+    $.ajax({
+        type: "POST",
+        url: "YourPage.aspx/SetSessionVariable",
+        data: JSON.stringify({ value: value }),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (response) {
+            console.log("Session variable set successfully.");
+        },
+        error: function (error) {
+            console.log("Error setting session variable: " + error.responseText);
+        }
+    });
+}
+
+
+
+https://stackoverflow.com/questions/15519454/how-to-access-session-variables-and-set-them-in-javascript
+
+https://stackoverflow.com/questions/53424650/how-to-set-javascript-variable-to-asp-net-session
