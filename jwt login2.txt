@@ -1,0 +1,269 @@
+<dependencies>
+    <!-- Spring Boot Web, Security, and JWT Dependencies -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt</artifactId>
+        <version>0.11.5</version> <!-- Choose the latest version -->
+    </dependency>
+</dependencies>
+
+
+
+===========================================================================
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import java.util.Date;
+import java.util.function.Function;
+
+public class JwtUtil {
+    private String secretKey = "your_secret_key"; // Replace with a more secure key
+
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
+    }
+
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public String generateToken(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours validity
+                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .compact();
+    }
+
+    public Boolean isTokenExpired(String token) {
+        return extractExpiration(token).before(new Date());
+    }
+
+    public Boolean validateToken(String token, String username) {
+        return (username.equals(extractUsername(token)) && !isTokenExpired(token));
+    }
+}
+
+==============================================================================================
+
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.stereotype.Service;
+
+@Service
+public class AuthService {
+
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
+
+    public AuthService(JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
+        this.jwtUtil = jwtUtil;
+        this.authenticationManager = authenticationManager;
+    }
+
+    public String authenticate(String username, String password) {
+        // Simulating a basic authentication check (in real app, check credentials in DB)
+        if ("test".equals(username) && "password".equals(password)) {
+            // Issue JWT token
+            return jwtUtil.generateToken(username);
+        } else {
+            throw new RuntimeException("Invalid username or password");
+        }
+    }
+}
+
+
+=============================================================================================
+
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.stereotype.Service;
+
+@Service
+public class AuthService {
+
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
+
+    public AuthService(JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
+        this.jwtUtil = jwtUtil;
+        this.authenticationManager = authenticationManager;
+    }
+
+    public String authenticate(String username, String password) {
+        // Simulating a basic authentication check (in real app, check credentials in DB)
+        if ("test".equals(username) && "password".equals(password)) {
+            // Issue JWT token
+            return jwtUtil.generateToken(username);
+        } else {
+            throw new RuntimeException("Invalid username or password");
+        }
+    }
+}
+
+=============================================================================================
+
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/login")
+public class AuthController {
+
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    @PostMapping
+    public String login(@RequestParam String username, @RequestParam String password) {
+        return authService.authenticate(username, password);
+    }
+}
+
+========================================================================
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.csrf().disable()
+            .authorizeRequests()
+            .antMatchers("/login").permitAll() // Allow login endpoint without authentication
+            .anyRequest().authenticated();
+    }
+}
+
+=============================================================================
+
+import axios from "axios";
+
+const API_URL = "http://localhost:8080/login";
+
+const login = (username, password) => {
+  return axios
+    .post(API_URL, { username, password })
+    .then((response) => {
+      if (response.data) {
+        localStorage.setItem("user", JSON.stringify(response.data)); // Save token
+      }
+      return response.data;
+    });
+};
+
+const logout = () => {
+  localStorage.removeItem("user");
+};
+
+const getCurrentUser = () => {
+  return JSON.parse(localStorage.getItem("user"));
+};
+
+export default {
+  login,
+  logout,
+  getCurrentUser,
+};
+
+===============================================================================
+import React, { useState } from "react";
+import AuthService from "./services/auth.service";
+
+const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    AuthService.login(username, password).then(
+      () => {
+        window.location.reload(); // Redirect after successful login
+      },
+      (error) => {
+        setMessage("Failed to login: " + error.message);
+      }
+    );
+  };
+
+  return (
+    <div>
+      <h2>Login</h2>
+      <form onSubmit={handleLogin}>
+        <div>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
+        <div>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <button type="submit">Login</button>
+      </form>
+      {message && <div>{message}</div>}
+    </div>
+  );
+};
+
+export default Login;
+===========================================================
+
+import React, { useEffect, useState } from "react";
+import AuthService from "./services/auth.service";
+
+const ProtectedRoute = () => {
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const user = AuthService.getCurrentUser();
+    if (user) {
+      setCurrentUser(user);
+    }
+  }, []);
+
+  if (!currentUser) {
+    return <div>Please log in to access this page.</div>;
+  }
+
+  return <div>Welcome, {currentUser.username}</div>;
+};
+
+export default ProtectedRoute;
+
