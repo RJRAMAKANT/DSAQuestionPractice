@@ -1,0 +1,146 @@
+spring.application.name=DemoProject
+spring.datasource.url=jdbc:mysql://localhost:3306/demo
+spring.datasource.username=root
+spring.datasource.password=root
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.hibernate.ddl-auto=update
+
+package com.example.demo.entity;
+
+import java.time.LocalDateTime;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "user")  // You can specify a table name here if you want to control it
+public class UserEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "fullname", nullable = false)
+    private String fullname;
+
+    @Column(name = "emailid", nullable = false, unique = true)
+    private String emailid;
+
+    @Column(name = "mobile", nullable = false, unique = true)
+    private String mobile;
+
+    @Column(name = "gender")
+    private String gender;
+
+    @Column(name = "password", nullable = false)
+    private String password;
+
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "datetime", nullable = false)
+    private LocalDateTime datetime;
+
+    @Column(name = "usetype", nullable = false)
+    private String usetype;
+
+    // Default constructor
+    public UserEntity() {
+        this.datetime = LocalDateTime.now(); // Set default datetime when object is created
+    }
+
+    // Parameterized constructor for quick initialization
+    public UserEntity(String fullname, String emailid, String mobile, String gender, String password, String address, String usetype) {
+        this.fullname = fullname;
+        this.emailid = emailid;
+        this.mobile = mobile;
+        this.gender = gender;
+        this.password = password;
+        this.address = address;
+        this.datetime = LocalDateTime.now();
+        this.usetype = usetype;
+    }
+
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getFullname() {
+        return fullname;
+    }
+
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
+    }
+
+    public String getEmailid() {
+        return emailid;
+    }
+
+    public void setEmailid(String emailid) {
+        this.emailid = emailid;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public LocalDateTime getDatetime() {
+        return datetime;
+    }
+
+    public void setDatetime(LocalDateTime datetime) {
+        this.datetime = datetime;
+    }
+
+    public String getUsetype() {
+        return usetype;
+    }
+
+    public void setUsetype(String usetype) {
+        this.usetype = usetype;
+    }
+
+    // Optional: toString method for easy object representation
+    @Override
+    public String toString() {
+        return "UserEntity [id=" + id + ", fullname=" + fullname + ", emailid=" + emailid + ", mobile=" + mobile
+                + ", gender=" + gender + ", password=" + password + ", address=" + address + ", datetime=" + datetime + ", usetype=" + usetype + "]";
+    }
+}
