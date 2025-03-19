@@ -1,0 +1,104 @@
+1. What is Spring Boot, and how does it differ from the traditional Spring framework?
+Answer:
+Spring Boot is a framework that simplifies the setup and configuration of Spring applications. Unlike the traditional Spring framework, which requires a lot of configuration (such as XML configuration or Java-based configuration), Spring Boot provides defaults and auto-configurations, making it easy to get started with minimal setup. It also comes with an embedded web server, eliminating the need for external application servers.
+
+2. What are the advantages of using Spring Boot for application development?
+Answer:
+
+Minimal configuration: Spring Boot auto-configures most components, reducing the need for manual configuration.
+Embedded web server: It comes with an embedded Tomcat, Jetty, or Undertow, so no need to deploy to an external web server.
+Microservice-friendly: Ideal for building microservices with features like embedded servers and easy deployment.
+Production-ready features: Spring Boot provides built-in support for metrics, health checks, and application monitoring (via Spring Boot Actuator).
+Rapid development: The convention-over-configuration approach allows for faster development.
+3. Explain the concept of "Convention over Configuration" in Spring Boot.
+Answer:
+"Convention over Configuration" means that Spring Boot has sensible defaults for most configurations. Instead of specifying configurations in detail, developers only need to override the defaults when specific customizations are needed. This reduces the boilerplate code and configuration required to set up a Spring application.
+
+4. What is an embedded web server in Spring Boot? Can you name some of the embedded web servers that Spring Boot supports?
+Answer:
+An embedded web server is a web server that is bundled with the application, so there's no need to install or configure an external server. Spring Boot includes embedded web servers like:
+
+Tomcat (default)
+Jetty
+Undertow
+These servers are part of the Spring Boot runtime and automatically configured when you build the application.
+
+5. What is the purpose of the @SpringBootApplication annotation?
+Answer:
+The @SpringBootApplication annotation is a combination of three important annotations:
+
+@Configuration: Marks the class as a source of bean definitions.
+@EnableAutoConfiguration: Tells Spring Boot to enable its auto-configuration mechanism.
+@ComponentScan: Tells Spring to scan the current package and its sub-packages for components, services, and configurations.
+This annotation is used to define the main class of a Spring Boot application.
+
+6. How do you create a Spring Boot project? What are the basic steps involved?
+Answer:
+To create a Spring Boot project:
+
+Use Spring Initializr (https://start.spring.io) to generate a project template by selecting dependencies.
+Import the project into your IDE (like IntelliJ IDEA or Eclipse).
+Add dependencies to pom.xml (Maven) or build.gradle (Gradle).
+Define your application entry point class with the @SpringBootApplication annotation.
+Run the application with mvn spring-boot:run or from your IDE.
+7. Can you explain the difference between @RestController and @Controller in Spring Boot?
+Answer:
+
+@Controller is typically used for traditional web applications where you return views (HTML, JSP, etc.). It is often used with ModelAndView to render views.
+@RestController is a convenience annotation that combines @Controller and @ResponseBody. It is used for building REST APIs where you directly return the response as JSON or XML without using views.
+8. What is Spring Boot's auto-configuration feature, and how does it work?
+Answer:
+Spring Boot’s auto-configuration feature automatically configures beans based on the dependencies added to the project. It uses @EnableAutoConfiguration (or more specifically @SpringBootApplication) to detect the libraries in the classpath and apply configurations based on those. For example, if Spring Boot detects a H2 database in the classpath, it automatically configures a DataSource bean for you.
+
+9. What is Dependency Injection in Spring, and how does it work in Spring Boot?
+Answer:
+Dependency Injection (DI) is a design pattern used in Spring to decouple the components of an application. Rather than creating dependencies manually, Spring Boot injects the required dependencies at runtime using annotations like @Autowired or constructor injection. This allows components to be loosely coupled and more maintainable.
+
+10. What is the use of @Autowired annotation in Spring Boot?
+Answer:
+The @Autowired annotation is used to automatically inject beans into a class. It can be used on fields, constructors, or setters. Spring Boot uses it to inject dependencies that are marked as Spring-managed beans.
+
+11. What is the difference between @Component, @Service, @Repository, and @Controller annotations?
+Answer:
+
+@Component: A generic annotation to mark a class as a Spring bean.
+@Service: Used to annotate service classes (typically business logic).
+@Repository: Used to annotate data access classes (typically used for DAOs or repositories).
+@Controller: Used to annotate classes that handle web requests and return views in MVC-based applications.
+12. Explain the concept of @ConfigurationProperties in Spring Boot. How is it different from @Value?
+Answer:
+@ConfigurationProperties is used to bind the properties from application.properties or application.yml to a Java class. It allows for grouping related properties together and injecting them as a type-safe configuration.
+
+@Value is used to inject a single property, whereas @ConfigurationProperties is better for injecting a group of related properties.
+13. How does Spring Boot integrate with JPA (Java Persistence API)?
+Answer:
+Spring Boot integrates with JPA by providing an easy way to set up data sources and connect to databases. Spring Boot automatically configures EntityManagerFactory, DataSource, and TransactionManager when the spring-boot-starter-data-jpa dependency is added. You can use repositories extending JpaRepository or CrudRepository to interact with the database.
+
+14. What is the role of application.properties or application.yml in Spring Boot for database configuration?
+Answer:
+application.properties or application.yml are used for externalizing configuration settings like database connection details (e.g., database URL, username, password, JPA properties). Spring Boot automatically loads these properties and configures the database connection.
+
+Example:
+
+properties
+Copy
+spring.datasource.url=jdbc:mysql://localhost:3306/mydb
+spring.datasource.username=root
+spring.datasource.password=password
+spring.jpa.hibernate.ddl-auto=update
+15. Can you explain what a Spring Data JPA repository is and how it simplifies database interaction?
+Answer:
+Spring Data JPA is a Spring-based framework that simplifies data access by using the JPA specification. By extending JpaRepository or CrudRepository, you can interact with the database without needing to write complex SQL queries. It provides methods for CRUD operations, pagination, and sorting out of the box.
+
+16. How would you handle database transactions in Spring Boot?
+Answer:
+Spring Boot uses @Transactional annotation to manage database transactions. This annotation ensures that a method is executed within a transaction context. If an exception occurs, the transaction is rolled back. Spring Boot’s transaction management is based on the underlying JPA or JDBC transaction management.
+
+Example:
+
+java
+Copy
+@Transactional
+public void saveData(MyEntity entity) {
+    repository.save(entity);
+}
